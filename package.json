@@ -13,6 +13,7 @@
     "@langchain/core": "^0.3.24",
     "@langchain/google-genai": "^0.1.5",
     "@types/node": "^22.10.2",
+    "dotenv": "^16.4.7",
     "inquirer": "^12.2.0",
     "langchain": "^0.3.7",
     "output_parsers": "link:@types/langchain/output_parsers",
