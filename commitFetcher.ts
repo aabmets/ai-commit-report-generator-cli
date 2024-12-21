@@ -2,11 +2,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { Commit, CommitStatisticEntry } from './schemas';
 import { format } from 'date-fns';
-
-interface DateRange {
-    startDate: Date;
-    endDate: Date;
-}
+import { DateRange } from './types';
 
 interface CommitFilters extends Partial<Commit> {
     dateRange?: DateRange;
