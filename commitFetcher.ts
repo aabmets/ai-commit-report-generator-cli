@@ -1,19 +1,37 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { Commit, CommitStatisticEntry } from './schemas';
+import { format } from 'date-fns';
 
-export async function fetchCommits( { filters = {}, path = "." }: { filters?: Partial<Commit>, path?: string } = {}): Promise<Commit[]> {
+interface DateRange {
+    startDate: Date;
+    endDate: Date;
+}
+
+interface CommitFilters extends Partial<Commit> {
+    dateRange?: DateRange;
+}
+
+export async function fetchCommits({ filters = {}, path = "." }: { filters?: CommitFilters, path?: string } = {}): Promise<Commit[]> {
     const execAsync = promisify(exec);
 
     try {
-        // Format: hash, author name, date, and message
-        const { stdout, stderr } = await execAsync(`cd "${path}" && git log --pretty=format:"%H|%an|%ad|%s" `);
+        // Build git log command with date range if specified
+        let gitCommand = `cd "${path}" && git log --pretty=format:"%H|%an|%ad|%s"`;
         
-        if (stderr) {
-            throw new Error(`Git log error: ${stderr}`);
+        if (filters.dateRange) {
+            const afterDate = format(filters.dateRange.startDate, 'yyyy-MM-dd');
+            const beforeDate = format(filters.dateRange.endDate, 'yyyy-MM-dd');
+            gitCommand += ` --after="${afterDate}" --before="${beforeDate}"`;
         }
 
-        if (!stdout.trim()) {
+        const { stdout, stderr } = await execAsync(gitCommand);
+        
+        if (stderr) {
+            console.warn(`Git log warning: ${stderr}`);
+        }
+
+        if (!stdout || !stdout.trim()) {
             return [];
         }
 
@@ -27,18 +45,18 @@ export async function fetchCommits( { filters = {}, path = "." }: { filters?: Pa
             };
         });
 
+        // Apply additional filters
         const filteredCommits = commits.filter((commit) => {
             const includesHash = filters.hash ? commit.hash.includes(filters.hash) : true;
             const includesUsername = filters.username ? commit.username === filters.username : true;
-            const includesDate = filters.date ? commit.date.includes(filters.date) : true;
             const includesMessage = filters.message ? commit.message.includes(filters.message) : true;
-            return includesHash && includesUsername && includesDate && includesMessage
+            return includesHash && includesUsername && includesMessage;
         });
 
         return filteredCommits;
     } catch (error) {
-        console.error('Error fetching git commits:', error);
-        throw error;
+        console.error('Error fetching git commits:', error instanceof Error ? error.message : 'Unknown error');
+        return [];
     }
 }
 
@@ -107,7 +125,7 @@ export async function getCommitStatistics(commit: Commit, path: string = "."):Pr
 }
 
 export async function fetchCommitsWithStatistics(
-    params: { filters?: Partial<Commit>, path?: string } = {}
+    params: { filters?: CommitFilters, path?: string } = {}
 ){
 
     const commits = await fetchCommits(params)
@@ -133,5 +151,25 @@ export async function fetchDiffs({filePath, hash, path = "."}:{hash:Commit['hash
     }catch(err){
         console.error("Failed to fetch the diff:", err instanceof Error ? err.message : 'Unknown error');
         throw err;
+    }
+}
+
+export async function getUniqueAuthors(path: string = "."): Promise<string[]> {
+    const execAsync = promisify(exec);
+    try {
+        const { stdout, stderr } = await execAsync(`cd "${path}" && git log --format="%an" | sort -u`);
+        
+        if (stderr) {
+            console.warn(`Git log warning: ${stderr}`);
+        }
+
+        if (!stdout || !stdout.trim()) {
+            return [];
+        }
+
+        return stdout.trim().split('\n');
+    } catch (error) {
+        console.error('Error fetching git authors:', error instanceof Error ? error.message : 'Unknown error');
+        return [];
     }
 }
