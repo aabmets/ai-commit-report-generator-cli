@@ -31,22 +31,21 @@ export class CommitAIProcessorAgent {
 
         this.prompt = new PromptTemplate({
             template: `
-            You are a commit analyzer. Your task is to summarize the commit based on the following information.
-            
-            IMPORTANT: You MUST use the file_diffs_tool at least once to examine the actual changes in the files.
-            This is a mandatory step - do not provide a summary without first checking the diffs.
-            
-            Here's the commit information:
-            1. Commit message: {message}
-            2. Commit hash: {hash}
-            3. Global stats: {statistics}
-            
-            Steps to follow:
-            1. First, use the file_diffs_tool to examine the changes in at least one modified file
-            2. Analyze the diffs and combine with other information
-            3. Provide a comprehensive summary following the format instructions
-            
-            {format_instructions}
+            You are a commit analyzer. Follow these steps in order:
+
+            1. Here is the commit information:
+               - Commit message: {message}
+               - Commit hash: {hash}
+               - Global stats: {statistics}
+
+            2. REQUIRED: Before creating any summary, you must first use the file_diffs_tool 
+               to check the actual changes in the source files.
+               
+            3. Only after examining the actual code changes with file_diffs_tool, 
+               create your summary following these format instructions:
+               {format_instructions}
+
+            DO NOT PROCEED TO STEP 3 BEFORE COMPLETING STEP 2.
             `,
             inputVariables: ['message', 'hash', 'statistics', 'format_instructions', 'agent_scratchpad'],
         })
@@ -71,9 +70,9 @@ export class CommitAIProcessorAgent {
         this.agent =   AgentExecutor.fromAgentAndTools({
             agent,
             tools,
-            verbose: true,
+            //verbose: true,
             callbacks: [
-                new ConsoleCallbackHandler(),
+                //new ConsoleCallbackHandler(),
             ],
         });
 
@@ -89,11 +88,6 @@ export class CommitAIProcessorAgent {
         statistics: CommitStatisticEntry[],
 
     }) {
-        console.log("Input:", {
-            message: commit.message,
-            hash: commit.hash,
-            statistics: JSON.stringify(statistics),
-        });
 
         const result = await this.agent.invoke({
             message: commit.message,
@@ -101,8 +95,8 @@ export class CommitAIProcessorAgent {
             statistics: JSON.stringify(statistics),
             format_instructions: this.parser.getFormatInstructions()
         });
+        
 
-        console.log("Raw Agent Output:", result);
         return this.parser.parse(result.output);
     }
 
@@ -120,10 +114,10 @@ export class CommitAIProcessorAgent {
                 name: "file_diffs_tool",
                 verbose: true,
                 description:
-                    "REQUIRED: This tool must be used to fetch and examine the actual code changes in files. It shows what was added, modified, or removed in the specified file for the given commit hash. You must use this at least once to provide an accurate summary.",
+                    "REQUIRED STEP: You must use this tool to see the actual code changes before creating any summary. It shows what was modified in the source files.",
                 schema: z.object({
-                    filePath: z.string().describe("The path of the file to examine"),
-                    hash: CommitSchema.shape.hash.describe("The hash of the commit to analyze")
+                    filePath: z.string().describe("Path of the source file to examine"),
+                    hash: CommitSchema.shape.hash.describe("The commit hash to analyze")
                 }),
             }
         );

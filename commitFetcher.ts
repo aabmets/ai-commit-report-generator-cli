@@ -7,7 +7,7 @@ export async function fetchCommits( { filters = {}, path = "." }: { filters?: Pa
 
     try {
         // Format: hash, author name, date, and message
-        const childProcess = await execAsync(`cd ${path} & git log --pretty=format:"%H|%an|%ad|%s" `);
+        const childProcess = await execAsync(`cd "${path}" && git log --pretty=format:"%H|%an|%ad|%s" `);
         const { stdout } = childProcess;
 
         const commits = stdout.split('\n').map(line => {
@@ -41,11 +41,11 @@ export async function fetchCommits( { filters = {}, path = "." }: { filters?: Pa
     }
 }
 
- export async function getCommitStatistics(commit: Commit):Promise<CommitStatisticEntry[]> {
+ export async function getCommitStatistics(commit: Commit, path: string = "."):Promise<CommitStatisticEntry[]> {
     const execAsync = promisify(exec);
     try {
         // Get just the stats summary using --shortstat
-        const { stdout: globalStats } = await execAsync(`git show --stat ${commit.hash}`);
+        const { stdout: globalStats } = await execAsync(`cd "${path}" && git show --stat ${commit.hash}`);
         // Ignore the commits details lines and the last line which consist of the summary of the number of file changes, insertions and delections
         const slicedGlobalStatsArray = globalStats.split('\n').slice(6, -2)
             ;
@@ -79,7 +79,7 @@ export async function fetchCommitsWithStatistics(
 ){
 
     const commits = await fetchCommits(params)
-    const commitStatistics = await Promise.all(commits.map(getCommitStatistics) );
+    const commitStatistics = await Promise.all(commits.map(commit => getCommitStatistics(commit, params.path)));
     return commits.map((commit,i) => {
         return {
             commit,
@@ -88,10 +88,10 @@ export async function fetchCommitsWithStatistics(
     })
 }
 
-export async function fetchDiffs({filePath,hash}:{hash:Commit['hash'],filePath:string}){
+export async function fetchDiffs({filePath, hash, path = "."}:{hash:Commit['hash'], filePath:string, path?: string}){
     const execAsync = promisify(exec)
     try{
-        const {stdout} = await execAsync(`git diff ${hash} ${filePath}`)
+        const {stdout} = await execAsync(`cd "${path}" && git diff ${hash} ${filePath}`)
         return stdout
     }catch(err){
         console.error("Failed to fetch the diff",err)

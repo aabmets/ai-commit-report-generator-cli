@@ -8,12 +8,18 @@ import { JsonLocalCache } from "./json-local-cache";
 dotenv.config();
 
 async function main() {
-    const commitsEntries = await fetchCommitsWithStatistics()
+    const commitsEntries = await fetchCommitsWithStatistics({path:"../../spitha-blog"})
+    console.log(commitsEntries)
+    return
     const commitAIProcessorAgent = new CommitAIProcessorAgent()
 await commitAIProcessorAgent.init()
-    const summary = await commitAIProcessorAgent.generateCommitSummary(commitsEntries[0])
+    for(const commit of commitsEntries){
+        console.log("generating the first summary")
+        const summary = await commitAIProcessorAgent.generateCommitSummary(commit)
+        console.log(summary)
 
-    console.log(summary)
+    }
+
 
 
 }
