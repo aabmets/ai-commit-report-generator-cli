@@ -1,14 +1,41 @@
 {
-  "name": "ai-cli-github-weekly-report-generator",
+  "name": "ai-git-weekly-report-generator",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "ts-node index.ts"
+  "description": "An AI-powered CLI tool that generates weekly reports from your Git activity",
+  "main": "dist/index.js",
+  "bin": {
+    "git-weekly": "./dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "ts-node index.ts",
+    "build": "tsc",
+    "postbuild": "chmod +x dist/index.js",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "git",
+    "github",
+    "report",
+    "weekly-report",
+    "ai",
+    "cli",
+    "automation"
+  ],
+  "author": "Sid Ali Assoul",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spithacode/ai-cli-github-weekly-report-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spithacode/ai-cli-github-weekly-report-generator/issues"
+  },
+  "homepage": "https://github.com/spithacode/ai-cli-github-weekly-report-generator#readme",
   "dependencies": {
     "@langchain/core": "^0.3.24",
     "@langchain/google-genai": "^0.1.5",
