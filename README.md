@@ -72,4 +72,4 @@ MIT
 
 ## Author
 
-[Your Name]
+[Sid Ali Assoul](https://github.com/stormsidali2001)
