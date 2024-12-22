@@ -13,8 +13,8 @@ export async function fetchCommits({ filters = {}, path = "." }: { filters?: Com
 
     try {
         // Build git log command with date range if specified
-        let gitCommand = `cd "${path}" && git log --pretty=format:"%H|%an|%ad|%s"`;
-        
+        let gitCommand = `cd "${path}" && git log --format="%H|%an|%ad|%s" --date=short`;
+
         if (filters.dateRange) {
             const afterDate = format(filters.dateRange.startDate, 'yyyy-MM-dd');
             const beforeDate = format(filters.dateRange.endDate, 'yyyy-MM-dd');
@@ -22,7 +22,7 @@ export async function fetchCommits({ filters = {}, path = "." }: { filters?: Com
         }
 
         const { stdout, stderr } = await execAsync(gitCommand);
-        
+
         if (stderr) {
             console.warn(`Git log warning: ${stderr}`);
         }
@@ -56,12 +56,12 @@ export async function fetchCommits({ filters = {}, path = "." }: { filters?: Com
     }
 }
 
-export async function getCommitStatistics(commit: Commit, path: string = "."):Promise<CommitStatisticEntry[]> {
+export async function getCommitStatistics(commit: Commit, path: string = "."): Promise<CommitStatisticEntry[]> {
     const execAsync = promisify(exec);
     try {
         // Get just the stats summary using --shortstat
         const { stdout: globalStats, stderr } = await execAsync(`cd "${path}" && git show --stat ${commit.hash}`);
-        
+
         if (stderr) {
             console.warn(`Warning in git show: ${stderr}`);
         }
@@ -77,7 +77,7 @@ export async function getCommitStatistics(commit: Commit, path: string = "."):Pr
 
         // Ignore the commits details lines and the last line which consist of the summary
         const slicedGlobalStatsArray = lines.slice(6, -2);
-        
+
         return slicedGlobalStatsArray
             .filter(line => line && line.trim()) // Filter out empty lines
             .map(line => {
@@ -85,10 +85,10 @@ export async function getCommitStatistics(commit: Commit, path: string = "."):Pr
                 if (segments.length < 4) {
                     return null;
                 }
-                
+
                 const [fileName, , totalChangesStr, operationsGraph] = segments;
                 const totalChanges = parseInt(totalChangesStr, 10);
-                
+
                 if (!operationsGraph || isNaN(totalChanges)) {
                     return null;
                 }
@@ -122,11 +122,11 @@ export async function getCommitStatistics(commit: Commit, path: string = "."):Pr
 
 export async function fetchCommitsWithStatistics(
     params: { filters?: CommitFilters, path?: string } = {}
-){
+) {
 
     const commits = await fetchCommits(params)
     const commitStatistics = await Promise.all(commits.map(commit => getCommitStatistics(commit, params.path)));
-    return commits.map((commit,i) => {
+    return commits.map((commit, i) => {
         return {
             commit,
             statistics: commitStatistics[i]
@@ -134,17 +134,17 @@ export async function fetchCommitsWithStatistics(
     })
 }
 
-export async function fetchDiffs({filePath, hash, path = "."}:{hash:Commit['hash'], filePath:string, path?: string}){
+export async function fetchDiffs({ filePath, hash, path = "." }: { hash: Commit['hash'], filePath: string, path?: string }) {
     const execAsync = promisify(exec)
-    try{
+    try {
         const { stdout, stderr } = await execAsync(`cd "${path}" && git diff ${hash} ${filePath}`)
-        
+
         if (stderr) {
             throw new Error(`Git diff error: ${stderr}`);
         }
 
         return stdout
-    }catch(err){
+    } catch (err) {
         console.error("Failed to fetch the diff:", err instanceof Error ? err.message : 'Unknown error');
         throw err;
     }
@@ -154,7 +154,7 @@ export async function getUniqueAuthors(path: string = "."): Promise<string[]> {
     const execAsync = promisify(exec);
     try {
         const { stdout, stderr } = await execAsync(`cd "${path}" && git log --format="%an" | sort -u`);
-        
+
         if (stderr) {
             console.warn(`Git log warning: ${stderr}`);
         }

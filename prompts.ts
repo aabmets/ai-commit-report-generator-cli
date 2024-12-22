@@ -10,7 +10,7 @@ export async function promptForOptions(repoPath: string): Promise<UserOptions> {
             type: 'list',
             name: 'timeUnit',
             message: 'Do you want to specify the interval in days or weeks?',
-            choices: ['days', 'weeks']
+            choices: [ 'days', 'weeks']
         }
     ]);
 
@@ -31,7 +31,6 @@ export async function promptForOptions(repoPath: string): Promise<UserOptions> {
     
     // Get list of authors and prompt for selection
     const authors = await getUniqueAuthors(repoPath);
-    
     const { filterByAuthor } = await inquirer.prompt([
         {
             type: 'confirm',
@@ -49,7 +48,7 @@ export async function promptForOptions(repoPath: string): Promise<UserOptions> {
                 type: 'list',
                 name: 'selectedAuthor',
                 message: 'Select an author:',
-                choices: ['All Authors', ...authors],
+                choices: [ 'All Authors', ...authors],
             }
         ]);
         

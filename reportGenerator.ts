@@ -34,10 +34,10 @@ export class ReportGenerator{
                 **Message**:\n
                 ${d.commit.message}\n
 
-                **Features**\n
-                ${d.summary.features.map(f=>
+                **Changes**\n
+                ${d.summary.changes.map(c=>
                     `
-                    - ${f}
+                    - [${c.type}]: ${c.description}\n
                     `).join('\n')}
                 `
                 )}

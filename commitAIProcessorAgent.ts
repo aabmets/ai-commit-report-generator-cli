@@ -20,7 +20,7 @@ export class CommitAIProcessorAgent {
     private readonly prompt: PromptTemplate;
     private readonly parser: StructuredOutputParser<typeof CommitSummarySchema>;
     //@ts-ignore
-    private  agent: AgentExecutor;
+    private  agentExecutor: AgentExecutor;
      constructor(
 
     ) {
@@ -33,26 +33,24 @@ export class CommitAIProcessorAgent {
             template: `
             You are a commit analyzer. Follow these steps in order:
 
-            1. Here is the commit information:
+             1. Here is the commit information:\n
                - Commit message: {message}
                - Commit hash: {hash}
                - Global stats: {statistics}
+             2. Depending on the commit attributes and statistics decide to use the "file_diffs_tool" to get the diffs or the code changes of a specific file in the commit statistics, You can use the tool as many times as needed before proceeding to the next step.\n
 
-            2. REQUIRED: Before creating any summary, you must first use the file_diffs_tool 
-               to check the actual changes in the source files.
-               
-            3. Only after examining the actual code changes with file_diffs_tool, 
-               create your summary following these format instructions:
-               {format_instructions}
+             3. Analyse the commit attributes, statistics and code changes to generate a summary of the commit.\n
 
-            DO NOT PROCEED TO STEP 3 BEFORE COMPLETING STEP 2.
+             4. The final summary should respect the format instructions below.\n
+
+            {format_instructions}
             `,
             inputVariables: ['message', 'hash', 'statistics', 'format_instructions', 'agent_scratchpad'],
         })
 
 
         this.llm = new ChatGoogleGenerativeAI({
-            modelName: "gemini-1.5-pro",
+            modelName: "gemini-2.0-flash-exp",
             apiKey: process.env.GOOGLE_API_KEY,
         });
 
@@ -60,6 +58,7 @@ export class CommitAIProcessorAgent {
     async init(){
 
         const tools = [this.getCommitDiffsTool()];
+
          const agent =await createOpenAIFunctionsAgent({
                 llm: this.llm,
                 //@ts-ignore
@@ -67,7 +66,7 @@ export class CommitAIProcessorAgent {
                 tools
             })
 
-        this.agent =   AgentExecutor.fromAgentAndTools({
+        this.agentExecutor =   AgentExecutor.fromAgentAndTools({
             agent,
             tools,
             //verbose: true,
@@ -89,7 +88,7 @@ export class CommitAIProcessorAgent {
 
     }) {
 
-        const result = await this.agent.invoke({
+        const result = await this.agentExecutor.invoke({
             message: commit.message,
             hash: commit.hash,
             statistics: JSON.stringify(statistics),
@@ -114,7 +113,7 @@ export class CommitAIProcessorAgent {
                 name: "file_diffs_tool",
                 verbose: true,
                 description:
-                    "REQUIRED STEP: You must use this tool to see the actual code changes before creating any summary. It shows what was modified in the source files.",
+                    "You can optionally use this tool to see the actual code changes before creating any summary. It shows what was modified in the source files.",
                 schema: z.object({
                     filePath: z.string().describe("Path of the source file to examine"),
                     hash: CommitSchema.shape.hash.describe("The commit hash to analyze")
