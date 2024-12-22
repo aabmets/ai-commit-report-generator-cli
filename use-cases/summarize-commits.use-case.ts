@@ -3,12 +3,13 @@ import { CommitSummary } from "../commitSummary";
 import { JsonStoreFactory } from "../json-store.factory";
 import { Commit, CommitStatisticEntry } from "../schemas";
 import { ProgressService } from "../services/progress.service";
+import { slugify } from "../utils";
 
 const getCommitSummariesKey = (key: string) => `summaries:${key}`
-export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, statistics: CommitStatisticEntry[] }[]): Promise<{ commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[]> => {
+export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, statistics: CommitStatisticEntry[] }[],repoPath:string="."): Promise<{ commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[]> => {
 
     const jsonStoreFactory = new JsonStoreFactory();
-    const cacheStore = await jsonStoreFactory.createOrGetStore("spitha-blog");
+    const cacheStore = await jsonStoreFactory.createOrGetStore(slugify(repoPath));
     const commitAIProcessorAgent = new CommitAIProcessorAgent();
     await commitAIProcessorAgent.init();
 

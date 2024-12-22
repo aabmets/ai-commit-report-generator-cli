@@ -4,10 +4,11 @@ import { JsonStoreFactory } from "../json-store.factory";
 import { format } from "date-fns";
 import { DailyReportAIGenerator } from "../reportAIGenerator";
 import { ProgressService } from "../services/progress.service";
+import { slugify } from "../utils";
 
-export async function generateReportUseCase(commitsWithSummaries: { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[]) {
+export async function generateReportUseCase(commitsWithSummaries: { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[],repoPath:string=".") {
     const storeFactory = new JsonStoreFactory()
-    const cacheStore = await storeFactory.createOrGetStore("spitha-blog")
+    const cacheStore = await storeFactory.createOrGetStore(slugify(repoPath))
 
     // generate report
     const groupedByDate = commitsWithSummaries.reduce((acc, { commit, statistics, summary }) => {
