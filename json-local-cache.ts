@@ -23,6 +23,7 @@ export class JsonStore{
                 console.log(key,value)
                 if(typeof value !== "string"){
                     this.cache[key] = value
+                    return
                 }
 
                 this.cache[key] = JSON.parse(value as string)

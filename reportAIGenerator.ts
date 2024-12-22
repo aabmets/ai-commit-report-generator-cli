@@ -10,20 +10,38 @@ export class DailyReportAIGenerator{
     private readonly prompt: PromptTemplate;
     private readonly parser: StructuredOutputParser<typeof BulletPointsSchema>
     constructor(){
+
         this.parser = StructuredOutputParser.fromZodSchema(BulletPointsSchema)
         this.prompt =  new PromptTemplate({
             template:`
-            You are a software engineer working on a project. Your task is to generate a weekly report for your team.\n
-            Follow these steps in order:
-             1. Analyse your commit list with their summaries and changes:\n
-              {commits}
-             2. Generate a bullet point report for your daily outcomes and achievements:\n
-             3. Respect the format instructions below:\n
-             {format_instructions}
+            You're a business report writer who specializes in making complex technical changes easy to understand for non-technical stakeholders. Your task is to create a clear, simple summary of the changes made.
+
+            Follow these steps:
+            1. Review the list of changes below:
+            {commits}
+
+            2. Create a bullet-point report that:
+               - Uses simple, everyday language
+               - Avoids technical terms and jargon
+               - Focuses on business value and user-facing improvements
+               - Explains changes in terms of what they mean for users/stakeholders
+               - Groups related changes together when possible
+               - Includes specific improvements and their benefits
+
+            3. Make sure each bullet point is:
+               - Written in plain English
+               - Easy to understand by someone with no technical background
+               - Focused on what was improved rather than how it was done
+            4. The number of bullet points should be equal to {numberOfCommits}
+            
+
+            5. Follow this format:
+            {format_instructions}
             `,
             inputVariables:[
                 'commits',
-                'format_instructions'
+                'format_instructions',
+                'numberOfCommits'
 
             ]
 
@@ -34,13 +52,11 @@ export class DailyReportAIGenerator{
             modelName: "gemini-2.0-flash-exp",
         })
 
-
-
     }
     generateReport(data:{commit:Commit, summary:CommitSummary}[]){
 
-
         return this.buildChain().invoke({
+            numberOfCommits: data.length,
             commits:data.map(d=>
                 `
                 - Commit: ${d.commit.hash}\n
