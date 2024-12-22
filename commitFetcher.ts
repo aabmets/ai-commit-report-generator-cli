@@ -23,6 +23,7 @@ export async function fetchCommits({ filters = {}, path = "." }: { filters?: Com
 
         const { stdout, stderr } = await execAsync(gitCommand);
 
+
         if (stderr) {
             console.warn(`Git log warning: ${stderr}`);
         }
@@ -31,7 +32,7 @@ export async function fetchCommits({ filters = {}, path = "." }: { filters?: Com
             return [];
         }
 
-        const commits = stdout.split('\n').map(line => {
+        const commits = stdout.split('\n').filter(line => line.trim()).map(line => {
             const [hash, username, date, message] = line.split('|');
             return {
                 hash,
@@ -125,7 +126,9 @@ export async function fetchCommitsWithStatistics(
 ) {
 
     const commits = await fetchCommits(params)
+
     const commitStatistics = await Promise.all(commits.map(commit => getCommitStatistics(commit, params.path)));
+
     return commits.map((commit, i) => {
         return {
             commit,

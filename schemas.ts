@@ -24,7 +24,7 @@ export const BulletPointsSchema = z.object({
             long:z.string().describe("The long description of the change")
         })
 
-    ).describe("Try to include as much information as possible. The more bullet points the better."),
+    ).describe("Try to include as much information as possible. The more bullet points the better. The number of bullet points should be equal to the number of commits"),
 })
 export type  BulletPoints = z.infer<typeof BulletPointsSchema>
 

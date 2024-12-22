@@ -1,5 +1,5 @@
 import { config as dotenvConfig } from 'dotenv';
-import { fetchCommitsWithStatistics } from './commitFetcher';
+import { fetchCommits, fetchCommitsWithStatistics } from './commitFetcher';
 import { CommitAIProcessorAgent } from './commitAIProcessorAgent';
 import { format } from 'date-fns';
 import { promptForOptions } from './prompts';
@@ -15,13 +15,11 @@ const getCommitSummariesKey = (key: string) => `summaries:${key}`
 const getAIReportKey = (commits:Commit[]) => `reports:${commits.map(c=>c.hash).join(',')}`
 async function main() {
 
-    const repoPath = ".";
-    const cacheStore =new JsonStore({
+    const repoPath = "../../spitha-blog";
+    const cacheStore = new JsonStore({
         path: `./${repoPath}cache.json`
     }) 
     await cacheStore.initCache()
-    console.dir(cacheStore.get(getCommitSummariesKey("fb8d750cb4649eb5fab7834ec14362e710bf9b02"))
-)
 
 
 
@@ -39,7 +37,7 @@ async function main() {
             username: options.username
         }
     });
-    console.log(commitsEntries[0])
+
 
     console.log(`Found ${commitsEntries.length} commits in the specified date range`);
     const commitsWithSummaries: { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[] = []
@@ -49,18 +47,17 @@ async function main() {
 
     let i = 0;
 
-    for (const commitEntry of commitsEntries.slice(0,10)) {
+    for (const commitEntry of commitsEntries) {
         console.log(`Summarizing commit ${++i} of ${commitsEntries.length}`);
         const cachedSummary = cacheStore.get(getCommitSummariesKey(commitEntry.commit.hash))
         if (cachedSummary) {
             console.log("Cached");
-
-        commitsWithSummaries.push({
-            commit: commitEntry.commit,
-            statistics: commitEntry.statistics,
-            //@ts-ignore
-            summary:cachedSummary
-        })
+            commitsWithSummaries.push({
+                commit: commitEntry.commit,
+                statistics: commitEntry.statistics,
+                //@ts-ignore
+                summary:cachedSummary
+            })
             continue;
         }
 
@@ -72,8 +69,9 @@ async function main() {
             summary
         })
         cacheStore.set(getCommitSummariesKey(commitEntry.commit.hash), JSON.stringify(summary))
-        // generate report
     }
+
+        // generate report
     const groupedByDate = commitsWithSummaries.reduce((acc,{commit,statistics,summary})=>{
 
         if(!acc[commit.date]){
@@ -84,8 +82,9 @@ async function main() {
         return acc
 
     },{} as Record<string,{commit:Commit,statistics:CommitStatisticEntry[],summary:CommitSummary}[]>)
+
     
-    for( const [key,value] of Object.entries(groupedByDate).slice(0,1)){
+    for( const [key,value] of Object.entries(groupedByDate)){
         console.info(`Generating report for date: ${key}`)
 
         const dailyReportAIGenerator = new DailyReportAIGenerator()

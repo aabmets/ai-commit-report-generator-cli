@@ -19,11 +19,14 @@ export class JsonStore{
     private desirializeCache(fileContent:string){
 
             this.cache = JSON.parse(fileContent)
-            // Object.entries(this.cache).forEach(([key,value])=>{
-            //     console.log(key,value)
+            Object.entries(this.cache).forEach(([key,value])=>{
+                console.log(key,value)
+                if(typeof value !== "string"){
+                    this.cache[key] = value
+                }
 
-            //      this.cache[key] = JSON.parse(value as string)
-            // })
+                this.cache[key] = JSON.parse(value as string)
+            })
 
     }
     public async initCache(){
