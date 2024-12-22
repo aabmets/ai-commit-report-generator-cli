@@ -32,15 +32,11 @@ export async function generateReportUseCase(commitsWithSummaries: { commit: Comm
         const cachedReport = cacheStore.get(reportKey)
 
         if (cachedReport) {
-            console.log(`\n${date}:`)
-            console.log(cachedReport)
             progressBar.increment();
             continue
         }
 
         const report = await dailyReportAIGenerator.generateReport(commitsEntries)
-        console.log(`\n${date}:`)
-        console.log(report)
         cacheStore.set(reportKey, report)
         progressBar.increment();
     }

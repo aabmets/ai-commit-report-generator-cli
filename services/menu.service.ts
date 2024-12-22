@@ -37,7 +37,6 @@ export class MenuService {
 
     private async showMainMenu(): Promise<MenuOption> {
         console.clear();
-        console.log(APP_DESCRIPTION);
 
         const { option } = await inquirer.prompt([
             {

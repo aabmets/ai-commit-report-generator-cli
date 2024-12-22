@@ -20,7 +20,6 @@ export class JsonStore{
 
             this.cache = JSON.parse(fileContent)
             Object.entries(this.cache).forEach(([key,value])=>{
-                console.log(key,value)
                 if(typeof value !== "string"){
                     this.cache[key] = value
                     return
