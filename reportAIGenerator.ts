@@ -54,6 +54,13 @@ export class DailyReportAIGenerator{
 
     }
     generateReport(data:{commit:Commit, summary:CommitSummary}[]){
+        if(data.length===0){
+            throw new Error('No commits found')
+        }
+        const firstCommit = data[0].commit
+        if(data.some(d=>d.commit.date!==firstCommit.date)){
+            throw new Error('Commits must be from the same day')
+        }
 
         return this.buildChain().invoke({
             numberOfCommits: data.length,

@@ -25,8 +25,6 @@ export class CommitAIProcessorAgent {
 
     ) {
 
-
-
         this.parser = StructuredOutputParser.fromZodSchema(CommitSummarySchema)
 
         this.prompt = new PromptTemplate({
@@ -42,7 +40,6 @@ export class CommitAIProcessorAgent {
              3. Analyse the commit attributes, statistics and code changes to generate a summary of the commit.\n
 
              4. The final summary should respect the format instructions below.\n
-
             {format_instructions}
             `,
             inputVariables: ['message', 'hash', 'statistics', 'format_instructions', 'agent_scratchpad'],

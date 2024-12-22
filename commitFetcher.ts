@@ -156,7 +156,7 @@ export async function fetchDiffs({ filePath, hash, path = "." }: { hash: Commit[
 export async function getUniqueAuthors(path: string = "."): Promise<string[]> {
     const execAsync = promisify(exec);
     try {
-        const { stdout, stderr } = await execAsync(`cd "${path}" && git log --format="%an" | sort -u`);
+        const {stdout,stderr} = await execAsync(`cd "${path}" && git log --format="%an" | sort -u`);
 
         if (stderr) {
             console.warn(`Git log warning: ${stderr}`);

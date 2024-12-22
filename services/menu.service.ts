@@ -1,11 +1,15 @@
 import inquirer from 'inquirer';
 import dotenv from 'dotenv';
-import { promptForOptions } from '../prompts';
+import { promptForScanFilteringOptions } from '../prompts';
 import { UserOptions } from '../types';
 import { format } from 'date-fns';
 import { summarizeCommitsUseCase } from '../use-cases/summarize-commits.use-case';
 import { generateReportUseCase } from '../use-cases/generate-report.use-case';
 import { fetchCommitsWithStatistics } from '../commitFetcher';
+import { JsonStoreFactory } from '../json-store.factory';
+import { slugify } from '../utils';
+import { consoleRenderer } from '../renderer';
+import { BulletPoints } from '../schemas';
 
 const APP_DESCRIPTION = `
 🚀 Welcome to GitHub Weekly Report Generator!
@@ -21,11 +25,11 @@ export class MenuService {
         while (true) {
             const option = await this.showMainMenu();
             await this.handleOption(option);
-            
+
             if (option === 'exit') {
                 break;
             }
-            
+
             await this.waitForConfirmation();
         }
     }
@@ -80,7 +84,7 @@ export class MenuService {
 
     private async ensureGoogleApiKey(): Promise<void> {
         dotenv.config();
-        
+
         if (!process.env.GOOGLE_API_KEY) {
             const { apiKey } = await inquirer.prompt([
                 {
@@ -118,8 +122,9 @@ export class MenuService {
             }
         ]);
 
-        const finalPath = repoPath === 'custom' ? 
-            (await inquirer.prompt([{
+        let finalPath: string = ".";
+        if (repoPath === "custom") {
+            const { customPath } = await inquirer.prompt([{
                 type: 'input',
                 name: 'customPath',
                 message: 'Enter the path to the repository:',
@@ -129,10 +134,13 @@ export class MenuService {
                     }
                     return true;
                 }
-            }])).customPath : repoPath;
+            }])
+            finalPath = customPath
 
-        const options = await promptForOptions(finalPath);
-        
+        }
+
+        const options = await promptForScanFilteringOptions(finalPath);
+
         console.log(`Fetching commits from ${format(options.dateRange.startDate, 'yyyy-MM-dd')} to ${format(options.dateRange.endDate, 'yyyy-MM-dd')}`);
 
         const commitsEntries = await fetchCommitsWithStatistics({
@@ -146,14 +154,22 @@ export class MenuService {
         console.log(`Found ${commitsEntries.length} commits in the specified date range`);
 
         const commitsWithSummaries = await summarizeCommitsUseCase(commitsEntries);
+
         await generateReportUseCase(commitsWithSummaries);
     }
 
     private async handleTechnicalSummary(): Promise<void> {
-        console.log('Technical Summary feature coming soon!');
+
+        const jsonFactory = JsonStoreFactory.getInstance()
+        const cacheStore = await jsonFactory.createOrGetStore(slugify('.'))
+        console.dir(cacheStore.getAll('summaries'),{depth:4})
+
     }
 
     private async handleDisplayReport(): Promise<void> {
-        console.log('Display Report feature coming soon!');
+        const jsonFactory = JsonStoreFactory.getInstance()
+        const cacheStore = await jsonFactory.createOrGetStore(slugify('.'))
+        const reports= cacheStore.getAll('report') as BulletPoints[]
+        consoleRenderer.renderReport(reports)
     }
 }

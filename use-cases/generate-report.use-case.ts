@@ -7,7 +7,7 @@ import { ProgressService } from "../services/progress.service";
 import { slugify } from "../utils";
 
 export async function generateReportUseCase(commitsWithSummaries: { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[],repoPath:string=".") {
-    const storeFactory = new JsonStoreFactory()
+    const storeFactory = JsonStoreFactory.getInstance()
     const cacheStore = await storeFactory.createOrGetStore(slugify(repoPath))
 
     // generate report

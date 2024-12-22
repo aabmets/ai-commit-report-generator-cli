@@ -8,9 +8,12 @@ import { slugify } from "../utils";
 const getCommitSummariesKey = (key: string) => `summaries:${key}`
 export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, statistics: CommitStatisticEntry[] }[],repoPath:string="."): Promise<{ commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[]> => {
 
-    const jsonStoreFactory = new JsonStoreFactory();
+    const jsonStoreFactory =  JsonStoreFactory.getInstance();
+
     const cacheStore = await jsonStoreFactory.createOrGetStore(slugify(repoPath));
+
     const commitAIProcessorAgent = new CommitAIProcessorAgent();
+
     await commitAIProcessorAgent.init();
 
     const commitsWithSummaries: { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[] = [];

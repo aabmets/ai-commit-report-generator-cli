@@ -14,6 +14,7 @@ class CliProgressBar implements ProgressBar {
             format: `${description} [{bar}] {percentage}% | {value}/{total}`,
             barCompleteChar: '\u2588',
             barIncompleteChar: '\u2591',
+            clearOnComplete: true
         });
     }
 

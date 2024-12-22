@@ -3,14 +3,14 @@ import { subDays, subWeeks } from 'date-fns';
 import { TimeUnit, UserOptions } from './types';
 import { getUniqueAuthors } from './commitFetcher';
 
-export async function promptForOptions(repoPath: string): Promise<UserOptions> {
+export async function promptForScanFilteringOptions(repoPath: string): Promise<UserOptions> {
     // First get the time unit and amount
     const { timeUnit } = await inquirer.prompt([
         {
             type: 'list',
             name: 'timeUnit',
             message: 'Do you want to specify the interval in days or weeks?',
-            choices: [ 'days', 'weeks']
+            choices: ['days', 'weeks']
         }
     ]);
 
@@ -28,9 +28,10 @@ export async function promptForOptions(repoPath: string): Promise<UserOptions> {
 
     const today = new Date();
     const startDate = timeUnit === 'weeks' ? subWeeks(today, amount) : subDays(today, amount);
-    
+
     // Get list of authors and prompt for selection
     const authors = await getUniqueAuthors(repoPath);
+
     const { filterByAuthor } = await inquirer.prompt([
         {
             type: 'confirm',
@@ -41,17 +42,17 @@ export async function promptForOptions(repoPath: string): Promise<UserOptions> {
     ]);
 
     let username: string | undefined;
-    
+
     if (filterByAuthor && authors.length > 0) {
         const { selectedAuthor } = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'selectedAuthor',
                 message: 'Select an author:',
-                choices: [ 'All Authors', ...authors],
+                choices: ['All Authors', ...authors],
             }
         ]);
-        
+
         if (selectedAuthor !== 'All Authors') {
             username = selectedAuthor;
         }

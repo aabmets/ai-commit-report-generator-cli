@@ -3,8 +3,15 @@ import { JsonStore } from "./json-local-cache";
 export class JsonStoreFactory {
     private instances: Record<string, JsonStore> = {}
 
-    constructor() {
+    private constructor() {
 
+    }
+    static instance:JsonStoreFactory
+    static getInstance(){
+        if(!this.instance){
+            this.instance = new JsonStoreFactory()
+        }
+        return this.instance
     }
 
     async createOrGetStore(uniqueName: string) {
@@ -13,7 +20,7 @@ export class JsonStoreFactory {
             return this.instances[uniqueName]
         }
         const cacheStore = new JsonStore({
-            path: `./${uniqueName}cache.json`
+            path: `./${uniqueName}-cache.json`
         })
         await cacheStore.initCache()
 
