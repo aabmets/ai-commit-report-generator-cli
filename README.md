@@ -1,24 +1,48 @@
 # AI Git Weekly Report Generator
 
-A command-line tool that generates intelligent weekly reports from your GitHub repository commits using AI. This tool analyzes your git commit history and provides structured, meaningful summaries of development activities.
+Transform your Git commit history into meaningful insights with AI-powered analysis. This CLI tool processes your repository's commits to generate both technical summaries and business-friendly reports, making it easier to track and communicate development progress across your team.
 
-## Features
+## 🎯 Features
 
-- Fetch and analyze git commits within specified date ranges
-- Generate AI-powered summaries of commit changes
-- Categorize changes into features, fixes, breaking changes, and refactors
-- Track development tools usage and patterns
-- Support for multiple authors and collaborative analysis
-- Interactive CLI interface
+- 🤖 AI-powered commit analysis and categorization
+- 📊 Dual reporting: Technical details and business-friendly summaries
+- 📅 Flexible date range filtering
+- 👥 Author-specific analysis support
+- 💾 Smart caching for quick subsequent views
+- 🔄 Support for both current and custom repository paths
 
-## Prerequisites
+## 🖥️ Interactive Menu
+
+The tool provides an intuitive CLI interface with the following options:
+
+### 1. Run Repository Scan
+![Repository Scan](./scan-repository.png)
+- Select repository (current directory or custom path)
+- Choose date range and optional author filter
+- AI processes commits and generates insights
+- Caches results for quick future access
+
+### 2. Display Technical Summary
+![Technical Summary](./technical-summary.png)
+- View detailed technical analysis of commits
+- See code statistics and changes
+- Access AI-generated technical insights
+- Perfect for developers and technical leads
+
+### 3. Display Report
+![Business Summary](./business-summary.png)
+- Business-friendly bullet-point summaries
+- Focus on user-facing improvements
+- Clear explanation of technical changes for non-technical stakeholders
+- Ideal for project managers and stakeholders
+
+## 🛠️ Prerequisites
 
 - Node.js (Latest LTS version recommended)
-- pnpm package manager
 - Git repository
-- Google AI API key (for AI-powered summaries)
+- Google AI API key (for AI-powered analysis)
 
-## Installation
+## 📦 Installation
 
 1. Clone the repository:
 ```bash
@@ -28,7 +52,7 @@ cd ai-cli-github-weekly-report-generator
 
 2. Install dependencies using pnpm:
 ```bash
-pnpm install
+npm install
 ```
 
 3. Create a `.env` file in the root directory and add your Google AI API key:
@@ -36,17 +60,18 @@ pnpm install
 GOOGLE_API_KEY=your_api_key_here
 ```
 
-## Usage
+## 🚀 Usage
 
 Start the CLI tool:
 ```bash
-pnpm start
+npm start
 ```
 
 The interactive CLI will guide you through:
-- Selecting date ranges for report generation
-- Choosing specific authors or analyzing all contributors
-- Generating detailed summaries of development activities
+- Selecting your repository
+- Choosing date ranges for analysis
+- Filtering by specific authors (optional)
+- Viewing technical or business-friendly reports
 
 ## Tech Stack
 
@@ -57,14 +82,6 @@ The interactive CLI will guide you through:
 - date-fns for date manipulation
 - Zod for schema validation
 - Chalk for CLI styling
-
-## Project Structure
-
-- `commitFetcher.ts`: Handles Git commit retrieval and analysis
-- `commitSummary.ts`: Defines the schema for commit summaries
-- `renderers.ts`: Manages output rendering
-- `services/menu.service.ts`: Handles CLI menu interactions
-- `json-local-cache.ts`: Manages local caching of data
 
 ## License
 
