@@ -8,8 +8,9 @@ import { generateReportUseCase } from '../use-cases/generate-report.use-case';
 import { fetchCommitsWithStatistics } from '../commitFetcher';
 import { JsonStoreFactory } from '../json-store.factory';
 import { slugify } from '../utils';
-import { consoleRenderer } from '../renderer';
-import { BulletPoints } from '../schemas';
+import { aiReportConsoleRenderer, aiSummaryConsoleRenderer } from '../renderers';
+import { BulletPoints, Commit, CommitStatisticEntry } from '../schemas';
+import { CommitSummary } from '../commitSummary';
 
 const APP_DESCRIPTION = `
 🚀 Welcome to GitHub Weekly Report Generator!
@@ -162,14 +163,24 @@ export class MenuService {
 
         const jsonFactory = JsonStoreFactory.getInstance()
         const cacheStore = await jsonFactory.createOrGetStore(slugify('.'))
-        console.dir(cacheStore.getAll('summaries'),{depth:4})
+        console.dir(cacheStore.getAll('summaries'), { depth: 4 })
+        const hashes = cacheStore.getKeys("summaries").map(e=>e.split(":")[1])
+        const commitsWithStatistics = await fetchCommitsWithStatistics({filters:{hashes}})
+
+        const cachedSummaries = commitsWithStatistics.map(e=>({
+            commit:e.commit,
+            statistics:e.statistics,
+            summary:cacheStore.get(`summaries:${e.commit.hash}`)
+
+        })) as { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[]
+        aiSummaryConsoleRenderer.renderSummary(cachedSummaries)
 
     }
 
     private async handleDisplayReport(): Promise<void> {
         const jsonFactory = JsonStoreFactory.getInstance()
         const cacheStore = await jsonFactory.createOrGetStore(slugify('.'))
-        const reports= cacheStore.getAll('report') as BulletPoints[]
-        consoleRenderer.renderReport(reports)
+        const reports = cacheStore.getAll('report').map(e=>e[1]) as BulletPoints[]
+        aiReportConsoleRenderer.renderReport(reports)
     }
 }

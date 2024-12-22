@@ -41,11 +41,16 @@ export class JsonStore{
     public  get(key:string){
         return this.cache[key]
     }
+    public getKeys(key:string){
+        return Object.keys(this.cache).filter((key)=>{
+            return key.startsWith(key)
+        })
+    }
     public getAll(keyFilter:string){
 
         return Object.entries(this.cache).filter(([key,value])=>{
             return key.startsWith(keyFilter)
-        }).map(e=>e[1])
+        })
 
     }
     public set(key:string,value:Object){

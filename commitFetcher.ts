@@ -6,6 +6,7 @@ import { DateRange } from './types';
 
 interface CommitFilters extends Partial<Commit> {
     dateRange?: DateRange;
+    hashes?: Commit['hash'][]
 }
 
 export async function fetchCommits({ filters = {}, path = "." }: { filters?: CommitFilters, path?: string } = {}): Promise<Commit[]> {
@@ -44,10 +45,11 @@ export async function fetchCommits({ filters = {}, path = "." }: { filters?: Com
 
         // Apply additional filters
         const filteredCommits = commits.filter((commit) => {
+            const inHashes = filters.hashes ? filters.hashes.includes(commit.hash) : true;
             const includesHash = filters.hash ? commit.hash.includes(filters.hash) : true;
             const includesUsername = filters.username ? commit.username === filters.username : true;
             const includesMessage = filters.message ? commit.message.includes(filters.message) : true;
-            return includesHash && includesUsername && includesMessage;
+            return inHashes&& includesHash && includesUsername && includesMessage;
         });
 
         return filteredCommits;
