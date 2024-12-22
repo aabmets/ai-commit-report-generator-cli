@@ -1,6 +1,6 @@
 {
   "name": "ai-git-weekly-report-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An AI-powered CLI tool that generates weekly reports from your Git activity",
   "main": "dist/index.js",
   "bin": {
@@ -30,12 +30,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/spithacode/ai-cli-github-weekly-report-generator.git"
+    "url": "git+https://github.com/spithacode/ai-commit-report-generator-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/spithacode/ai-cli-github-weekly-report-generator/issues"
+    "url": "https://github.com/spithacode/ai-commit-report-generator-cli/issues"
   },
-  "homepage": "https://github.com/spithacode/ai-cli-github-weekly-report-generator#readme",
+  "homepage": "https://github.com/spithacode/ai-commit-report-generator-cli#readme",
   "dependencies": {
     "@langchain/core": "^0.3.24",
     "@langchain/google-genai": "^0.1.5",
