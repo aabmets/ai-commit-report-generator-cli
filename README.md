@@ -16,21 +16,21 @@ Transform your Git commit history into meaningful insights with AI-powered analy
 The tool provides an intuitive CLI interface with the following options:
 
 ### 1. Run Repository Scan
-![Repository Scan](./scan-repository.png)
+![Repository Scan](./media/scan-repository.png)
 - Select repository (current directory or custom path)
 - Choose date range and optional author filter
 - AI processes commits and generates insights
 - Caches results for quick future access
 
 ### 2. Display Technical Summary
-![Technical Summary](./technical-summary.png)
+![Technical Summary](./media/technical-summary.png)
 - View detailed technical analysis of commits
 - See code statistics and changes
 - Access AI-generated technical insights
 - Perfect for developers and technical leads
 
 ### 3. Display Report
-![Business Summary](./business-summary.png)
+![Business Summary](./media/business-summary.png)
 - Business-friendly bullet-point summaries
 - Focus on user-facing improvements
 - Clear explanation of technical changes for non-technical stakeholders
@@ -45,20 +45,21 @@ The tool provides an intuitive CLI interface with the following options:
 ## 📦 Installation
 
 1. Clone the repository:
-```bash
-git clone [your-repo-url]
-cd ai-cli-github-weekly-report-generator
-```
+   ```bash
+   git clone [your-repo-url]
+   cd ai-cli-github-weekly-report-generator
+   ```
 
 2. Install dependencies using pnpm:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 3. Create a `.env` file in the root directory and add your Google AI API key:
-```env
-GOOGLE_API_KEY=your_api_key_here
-```
+   ```env
+   GOOGLE_API_KEY=your_api_key_here
+   ```
+
 
 ## 🚀 Usage
 
