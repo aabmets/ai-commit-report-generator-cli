@@ -1,4 +1,4 @@
-import cliProgress from 'cli-progress';
+import cliProgress from "cli-progress";
 
 export interface ProgressBar {
     start(total: number): void;
@@ -12,9 +12,9 @@ class CliProgressBar implements ProgressBar {
     constructor(description: string) {
         this.bar = new cliProgress.SingleBar({
             format: `${description} [{bar}] {percentage}% | {value}/{total}`,
-            barCompleteChar: '\u2588',
-            barIncompleteChar: '\u2591',
-            clearOnComplete: true
+            barCompleteChar: "\u2588",
+            barIncompleteChar: "\u2591",
+            clearOnComplete: true,
         });
     }
 
@@ -38,7 +38,7 @@ class NoOpProgressBar implements ProgressBar {
 }
 
 export class ProgressService {
-    static createProgressBar(description: string, enabled: boolean = true): ProgressBar {
+    static createProgressBar(description: string, enabled = true): ProgressBar {
         return enabled ? new CliProgressBar(description) : new NoOpProgressBar();
     }
 }

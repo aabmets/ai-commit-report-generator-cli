@@ -1,4 +1,4 @@
-export type TimeUnit = 'days' | 'weeks';
+export type TimeUnit = "days" | "weeks";
 
 export interface DateRange {
     startDate: Date;

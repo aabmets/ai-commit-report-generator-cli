@@ -1,56 +1,45 @@
 {
-  "name": "ai-commit-report-generator-cli",
-  "version": "1.0.3",
-  "description": "An AI-powered CLI tool that generates weekly reports from your Git activity",
-  "main": "dist/index.js",
-  "bin": {
-    "git-commit-report": "./dist/index.js"
-  },
-  "files": [
-    "dist/**/*",
-    "README.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "start": "ts-node index.ts",
-    "build": "tsc",
-    "postbuild": "chmod +x dist/index.js",
-    "prepublishOnly": "pnpm run build"
-  },
-  "keywords": [
-    "git",
-    "github",
-    "report",
-    "weekly-report",
-    "ai",
-    "cli",
-    "automation"
-  ],
-  "author": "Sid Ali Assoul",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/spithacode/ai-commit-report-generator-cli.git"
-  },
-  "bugs": {
-    "url": "https://github.com/spithacode/ai-commit-report-generator-cli/issues"
-  },
-  "homepage": "https://github.com/spithacode/ai-commit-report-generator-cli#readme",
-  "dependencies": {
-    "@langchain/core": "^0.3.24",
-    "@langchain/google-genai": "^0.1.5",
-    "@types/cli-progress": "^3.11.6",
-    "@types/inquirer": "^9.0.7",
-    "@types/node": "^22.10.2",
-    "chalk": "^4.0.0",
-    "cli-progress": "^3.12.0",
-    "date-fns": "^4.1.0",
-    "dotenv": "^16.4.7",
-    "inquirer": "^12.2.0",
-    "langchain": "^0.3.7",
-    "output_parsers": "link:@types/langchain/output_parsers",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.2",
-    "zod": "^3.24.1"
-  }
+    "name": "ai-commit-report-generator-cli",
+    "version": "1.0.3",
+    "description": "An AI-powered CLI tool that generates weekly reports from your Git activity",
+    "main": "dist/index.js",
+    "bin": {
+        "git-commit-report": "./dist/index.js"
+    },
+    "files": ["dist/**/*", "README.md", "LICENSE"],
+    "scripts": {
+        "check": "biome check --write",
+        "start": "ts-node src/index.ts",
+        "build": "tsc",
+        "postbuild": "chmod +x dist/index.js",
+        "prepublishOnly": "pnpm run build"
+    },
+    "keywords": ["git", "github", "report", "weekly-report", "ai", "cli", "automation"],
+    "author": "Sid Ali Assoul",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/spithacode/ai-commit-report-generator-cli.git"
+    },
+    "bugs": {
+        "url": "https://github.com/spithacode/ai-commit-report-generator-cli/issues"
+    },
+    "homepage": "https://github.com/spithacode/ai-commit-report-generator-cli#readme",
+    "dependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@langchain/core": "^0.3.24",
+        "@langchain/google-genai": "^0.1.5",
+        "@types/cli-progress": "^3.11.6",
+        "@types/inquirer": "^9.0.7",
+        "@types/node": "^22.10.2",
+        "chalk": "^4.0.0",
+        "cli-progress": "^3.12.0",
+        "date-fns": "^4.1.0",
+        "dotenv": "^16.4.7",
+        "inquirer": "^12.2.0",
+        "langchain": "^0.3.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2",
+        "zod": "^3.24.1"
+    }
 }

@@ -1,14 +1,16 @@
 import { CommitAIProcessorAgent } from "../commitAIProcessorAgent";
-import { CommitSummary } from "../commitSummary";
+import type { CommitSummary } from "../commitSummary";
 import { JsonStoreFactory } from "../json-store.factory";
-import { Commit, CommitStatisticEntry } from "../schemas";
+import type { Commit, CommitStatisticEntry } from "../schemas";
 import { ProgressService } from "../services/progress.service";
 import { slugify } from "../utils";
 
-const getCommitSummariesKey = (key: string) => `summaries:${key}`
-export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, statistics: CommitStatisticEntry[] }[],repoPath:string="."): Promise<{ commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[]> => {
-
-    const jsonStoreFactory =  JsonStoreFactory.getInstance();
+const getCommitSummariesKey = (key: string) => `summaries:${key}`;
+export const summarizeCommitsUseCase = async (
+    commitsEntries: { commit: Commit; statistics: CommitStatisticEntry[] }[],
+    repoPath = ".",
+): Promise<{ commit: Commit; statistics: CommitStatisticEntry[]; summary: CommitSummary }[]> => {
+    const jsonStoreFactory = JsonStoreFactory.getInstance();
 
     const cacheStore = await jsonStoreFactory.createOrGetStore(slugify(repoPath));
 
@@ -16,9 +18,13 @@ export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, 
 
     await commitAIProcessorAgent.init();
 
-    const commitsWithSummaries: { commit: Commit, statistics: CommitStatisticEntry[], summary: CommitSummary }[] = [];
+    const commitsWithSummaries: {
+        commit: Commit;
+        statistics: CommitStatisticEntry[];
+        summary: CommitSummary;
+    }[] = [];
 
-    const progressBar = ProgressService.createProgressBar('Summarizing commits');
+    const progressBar = ProgressService.createProgressBar("Summarizing commits");
     progressBar.start(commitsEntries.length);
 
     for (const commitEntry of commitsEntries) {
@@ -29,7 +35,7 @@ export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, 
                 commit: commitEntry.commit,
                 statistics: commitEntry.statistics,
                 //@ts-ignore
-                summary: cachedSummary
+                summary: cachedSummary,
             });
             progressBar.increment();
             continue;
@@ -40,7 +46,7 @@ export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, 
         commitsWithSummaries.push({
             commit: commitEntry.commit,
             statistics: commitEntry.statistics,
-            summary
+            summary,
         });
         cacheStore.set(getCommitSummariesKey(commitEntry.commit.hash), JSON.stringify(summary));
         progressBar.increment();
@@ -48,4 +54,4 @@ export const summarizeCommitsUseCase = async (commitsEntries: { commit: Commit, 
 
     progressBar.stop();
     return commitsWithSummaries;
-}
+};

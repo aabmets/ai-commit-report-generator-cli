@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { MenuService } from './services/menu.service';
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
+import { MenuService } from "./services/menu.service";
 
 dotenv.config();
 
