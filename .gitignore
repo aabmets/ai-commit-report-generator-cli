@@ -4,3 +4,5 @@ dist/
 !json-local-cache.js
 .vscode
 .idea
+*-cache.json
+cache.json
